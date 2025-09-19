@@ -47,15 +47,3 @@ Route::middleware('auth')->group(function () {
 
 });
 
-// Route::middleware(['auth', 'role:user'])->group(function () {
-//     Route::get('/user/dashboard', function () {
-//         return "User Dashboard";
-//     })->name('user.dashboard');
-// });
-
-// // Admin Dashboard
-// Route::middleware(['auth', 'role:admin'])->group(function () {
-//     Route::get('/admin/dashboard', function () {
-//         return "Admin Dashboard";
-//     })->name('admin.dashboard');
-// });
