@@ -11,15 +11,32 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body class="font-sans antialiased">
+<body class="font-sans antialiased overflow-hidden">
     <div class="min-h-screen bg-gray-100">
         @include('layouts.navigation')
 
-        <main>
-            @include('layouts.partials.alerts')
-            @yield('content')
-        </main>
+        {{-- optional: mobile toggle button --}}
+        <button class="btn btn-outline-secondary d-md-none m-2" type="button" data-bs-toggle="collapse"
+            data-bs-target="#appSidebar" aria-controls="appSidebar" aria-expanded="false" aria-label="Toggle sidebar">
+            ☰ Menu
+        </button>
+
+        <div class="container-fluid">
+            <div class="row min-vh-100">
+                {{-- Sidebar --}}
+                @include('layouts.partials.sidebar')
+
+                {{-- Main content --}}
+                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                    @include('layouts.partials.alerts')
+                    @yield('content')
+                </main>
+            </div>
+        </div>
     </div>
+    {{-- Bootstrap JS --}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 
 </html>
