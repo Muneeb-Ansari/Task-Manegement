@@ -1,6 +1,5 @@
 @extends('layouts.app')
 
-@dd($roles)
 @section('content')
     <div class="container">
         <h1 class="mb-4">Create New User</h1>

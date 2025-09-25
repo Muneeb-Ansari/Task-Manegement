@@ -14,8 +14,8 @@ class TaskController extends Controller
     public function index()
     {
         $user = auth()->user();
-
-        if ($user->role === 'admin') {
+        # code...
+        if (isset($user) && $user->role === 'admin') {
             $tasks = Task::with(['creator', 'assignee'])->latest()->paginate(15);
         } else {
             $tasks = Task::with(['creator', 'assignee'])
@@ -23,6 +23,10 @@ class TaskController extends Controller
                 ->latest()
                 ->paginate(15);
         }
+        // return response()->json([
+        //     "data" => $tasks,
+        //     "message" => "task get successfully"
+        // ]);
 
         return view('tasks.index', compact('tasks'));
     }

@@ -67,16 +67,15 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, String $id)
     {
         //
-        $validated = $request->validated();
-        User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
-            'role' => $validated['role'],
-        ]);
+        $user = User::find($id);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->role = $request->role;
+        // $validated = $request->validated();
+        $user->save();
 
         return redirect()->route('users.index')->with('success', 'User updated successfully!');
     }
@@ -87,5 +86,8 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         //
+        $user = User::find($id);
+        $user->delete();
+        return redirect()->route('users.index')->with('success', 'User Deleted successfully!');
     }
 }
