@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreTaskRequest;
-use App\Http\Requests\UpdateTaskRequest;
-use App\Models\Task;
-use App\Models\User;
+use App\Models\{Task, User};
 
 class TaskController extends Controller
 {
-    //
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
         $user = auth()->user();
@@ -23,7 +23,10 @@ class TaskController extends Controller
                 ->latest()
                 ->paginate(15);
         }
-        return view('tasks.index', compact('tasks'));
+        return response()->json([
+            "data" => $tasks,
+            "message" => $tasks ? 'updated successfully' : 'update failed'
+        ]);
     }
 
     public function create()
@@ -42,21 +45,19 @@ class TaskController extends Controller
         ]);
         $validated['created_by'] = auth()->id();
         $status = Task::create($validated);
-        if ($status) {
-            return redirect()->route('tasks.index')->with('success', 'Task created successfully!');
-        } else {
-            return redirect()->route('tasks.index')->with('Danger', 'Problem occured during task creation');
-        }
+        return response()->json([
+            "status" => $status,
+        ]);
     }
     public function show(Task $task, String $id)
     {
-        $this->authorize('view', $task);
-        $task = $task->find($id);
-        return view('tasks.show', compact('task'));
+        $tas = $task->find($id);
+        return response()->json([
+            "data" => $tas
+        ]);
     }
     public function edit(Task $task)
     {
-        //need to update this method
         $this->authorize('update', $task);
         $users = User::all();
         return view('tasks.edit', compact('task', 'users'));
@@ -73,21 +74,18 @@ class TaskController extends Controller
             'status' => 'required|in:pending,in_progress,completed',
         ]);
 
-        $update = $tas->update($validated);
-        if ($update) {
-            return redirect()->route('tasks.show', $task)->with('success', 'Task updated successfully!');
-        } else {
-            return redirect()->route('tasks.show', $task)->with('danger', 'Task not updated');
-        }
+        $saved = $tas->update($validated);
+        return response()->json([
+            "data" => $saved,
+            "message" => "udpated successfully"
+        ]);
     }
     public function destroy(Task $task, $id)
     {
         $this->authorize('delete', $task);
-        $deleted = $task->find($id)->delete();
-        if ($deleted) {
-            return redirect()->route('tasks.index')->with('success', 'Task Deleted successfully!');
-        } else {
-            return redirect()->route('tasks.index')->with('success', 'Task not Deleted');
-        }
+        $delete = $task->find($id)->delete();
+        return response()->json([
+            "res" => $delete,
+        ]);
     }
 }
