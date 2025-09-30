@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 
+require __DIR__ . '/auth.php';
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -30,7 +31,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
 
 Route::middleware('auth')->group(function () {
 
@@ -45,7 +45,6 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
-
 });
 
 Route::middleware('auth')->group(function () {
@@ -59,7 +58,19 @@ Route::middleware('auth')->group(function () {
         Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     });
 
-    // Route::get('tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
+    Route::get('tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
 
 });
 
+// notifications
+
+Route::get('/notifications', function () {
+    $notifications = auth()->user()->unreadNotifications()->paginate(10);
+    return view('notifications.notification', compact('notifications'));
+})->name('notifications.notification');
+
+Route::post('/notifications/{id}/read', function ($id) {
+    $n = auth()->user()->notifications()->where('id', $id)->firstOrFail();
+    $n->markAsRead();
+    return back();
+})->name('notifications.read');

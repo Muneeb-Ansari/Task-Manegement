@@ -5,24 +5,23 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
-use App\Models\Task;
-use App\Models\User;
+use App\Models\{User, Task};
+use App\Repositories\TaskRepository;
 
 class TaskController extends Controller
 {
     //
+    protected $taskRepository;
+
+    public function __construct(TaskRepository $taskRepository)
+    {
+        $this->taskRepository = $taskRepository;
+    }
+
     public function index()
     {
         $user = auth()->user();
-        # code...
-        if (isset($user) && $user->role === 'admin') {
-            $tasks = Task::with(['creator', 'assignee'])->latest()->paginate(15);
-        } else {
-            $tasks = Task::with(['creator', 'assignee'])
-                ->forUser($user->id)
-                ->latest()
-                ->paginate(15);
-        }
+        $tasks = $this->taskRepository->index($user);
         return view('tasks.index', compact('tasks'));
     }
 
@@ -32,26 +31,22 @@ class TaskController extends Controller
         return view('tasks.create', compact('users'));
     }
 
-    public function store(Request $request)
+    public function store(StoreTaskRequest $request)
     {
-        $validated = $request->validate([
-            'title'       => 'required|string|max:255',
-            'description' => 'required|string',
-            'assigned_to' => 'required|exists:users,id',
-            'status'      => 'required|in:pending,in_progress,completed',
-        ]);
+        $validated = $request->validated();
         $validated['created_by'] = auth()->id();
-        $status = Task::create($validated);
-        if ($status) {
+        $task = $this->taskRepository->store($request, $validated);
+        if ($task) {
             return redirect()->route('tasks.index')->with('success', 'Task created successfully!');
         } else {
             return redirect()->route('tasks.index')->with('Danger', 'Problem occured during task creation');
         }
     }
-    public function show(Task $task, String $id)
+
+    public function show(String $id)
     {
+        $task = Task::find($id);
         $this->authorize('view', $task);
-        $task = $task->find($id);
         return view('tasks.show', compact('task'));
     }
     public function edit(Task $task)
@@ -61,17 +56,12 @@ class TaskController extends Controller
         $users = User::all();
         return view('tasks.edit', compact('task', 'users'));
     }
-    public function update(Request $request, Task $task, String $id)
+    public function update(UpdateTaskRequest $request, Task $task, String $id)
     {
         $this->authorize('update', $task);
         $tas = $task->find($id);
 
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'assigned_to' => 'required|exists:users,id',
-            'status' => 'required|in:pending,in_progress,completed',
-        ]);
+        $validated = $request->validated();
 
         $update = $tas->update($validated);
         if ($update) {

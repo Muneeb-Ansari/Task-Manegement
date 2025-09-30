@@ -4,9 +4,11 @@
             <li class="nav-item">
                 <a class="nav-link active" href="{{ url('/') }}">Dashboard</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url('/users') }}">Users</a>
-            </li>
+            @can('viewAny', App\Models\User::class)
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('/users') }}">Users</a>
+                </li>
+            @endcan
             <li class="nav-item">
                 <a class="nav-link" href="{{ url('/tasks') }}">Tasks</a>
             </li>
