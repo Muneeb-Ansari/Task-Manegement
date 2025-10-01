@@ -27,6 +27,7 @@ class StoreTaskRequest extends FormRequest
             'description' => 'required|string',
             'assigned_to' => 'required|exists:users,id',
             'status'      => 'required|in:pending,in_progress,completed',
+            'due_date'    => 'nullable|date|after_or_equal:today',
         ];
     }
 }

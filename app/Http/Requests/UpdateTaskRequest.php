@@ -11,6 +11,18 @@ class UpdateTaskRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        $task = $this->route('task');
+        
+        // Admin can update any task
+        if (auth()->user()->role === 'admin') {
+            return true;
+        }
+        
+        // User can only update tasks assigned to them
+        if (auth()->user()->role === 'user' && auth()->user()->id === $task->assigned_to) {
+            return true;
+        }
+        
         return false;
     }
 
@@ -27,6 +39,7 @@ class UpdateTaskRequest extends FormRequest
             'description' => 'required|string',
             'assigned_to' => 'required|exists:users,id',
             'status' => 'required|in:pending,in_progress,completed',
+            'due_date'    => 'nullable|date|after_or_equal:today',
         ];
     }
 }

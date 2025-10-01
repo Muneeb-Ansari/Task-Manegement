@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreTaskRequest;
-use App\Http\Requests\UpdateTaskRequest;
+use App\Http\Requests\{StoreTaskRequest, UpdateTaskRequest};
 use App\Models\{User, Task};
 use App\Repositories\TaskRepository;
 
@@ -56,15 +55,15 @@ class TaskController extends Controller
         $users = User::all();
         return view('tasks.edit', compact('task', 'users'));
     }
-    public function update(UpdateTaskRequest $request, Task $task, String $id)
+    public function update(UpdateTaskRequest $request, String $id)
     {
+        $task =  Task::find($id);
         $this->authorize('update', $task);
-        $tas = $task->find($id);
 
         $validated = $request->validated();
 
-        $update = $tas->update($validated);
-        if ($update) {
+        $updated = $task->update($validated);
+        if ($updated) {
             return redirect()->route('tasks.show', $task)->with('success', 'Task updated successfully!');
         } else {
             return redirect()->route('tasks.show', $task)->with('danger', 'Task not updated');

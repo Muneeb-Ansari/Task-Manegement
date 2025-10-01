@@ -41,8 +41,17 @@ class TaskPolicy
      */
     public function update(User $user, Task $task): bool
     {
-        //
-        return $user->role === 'admin';
+        // Admin can update any task
+        if ($user->role === 'admin') {
+            return true;
+        }
+        
+        // Regular user can only update tasks assigned to them
+        if ($user->role === 'user' && $user->id === $task->assigned_to) {
+            return true;
+        }
+        
+        return false;
     }
 
     /**

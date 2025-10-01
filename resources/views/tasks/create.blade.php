@@ -62,6 +62,13 @@
                         </select>
                     </div>
 
+                    <!-- Due date -->
+                    <div class="mb-3">
+                        <label for="due_date" class="form-label"> Due date</label>
+                        <input type="due_date" name="due_date" id="due_date" class="form-control"
+                            value="{{ old('due_date') }}">
+                    </div>
+
                     <!-- Submit -->
                     <button type="submit" class="btn btn-success">Create Task</button>
                     <a href="{{ route('tasks.index') }}" class="btn btn-secondary">Cancel</a>
@@ -70,3 +77,18 @@
         </div>
     </div>
 @endsection
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+$(document).ready(function() {
+    $("#due_date").datepicker({
+        dateFormat: 'yy-mm-dd',
+        minDate: 0,
+        changeMonth: true,
+        changeYear: true,
+        yearRange: '2024:2030'
+    });
+});
+</script>

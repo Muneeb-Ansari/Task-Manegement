@@ -31,6 +31,8 @@
                     <span class="badge bg-secondary">{{ ucfirst($task->status) }}</span>
                 @endif
             </p>
+             <!-- Due date -->
+            <p><strong>Due date:</strong> {{ $task->due_date ?? '' }}</p>
 
             <!-- Dates -->
             <p><strong>Created At:</strong> {{ $task->created_at->format('d M Y, h:i A') }}</p>

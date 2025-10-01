@@ -22,6 +22,7 @@
                     <th>Creator</th>
                     <th>Assignee</th>
                     <th>Status</th>
+                    <th>Due Date</th>
                     <th>Created At</th>
                     <th>Actions</th>
                 </tr>
@@ -43,12 +44,13 @@
                                 <span class="badge bg-secondary">{{ ucfirst($task->status) }}</span>
                             @endif
                         </td>
+                        <td>{{ $task->due_date ?? '' }}</td>
                         <td>{{ $task->created_at->format('d M Y') }}</td>
                         <td>
                             <a href="{{ route('tasks.show', $task->id) }}" class="btn btn-sm btn-info">View</a>
-                            @can('update', $task)
+                            {{-- @can('update', $task) --}}
                                 <a href="{{ route('tasks.edit', $task->id) }}" class="btn btn-sm btn-primary">Edit</a>
-                            @endcan
+                            {{-- @endcan --}}
                             @can('delete', $task)
                                 <form action="{{ route('tasks.destroy', $task->id) }}" method="POST" style="display:inline-block;">
                                     @csrf
