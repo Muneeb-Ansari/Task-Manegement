@@ -19,7 +19,7 @@ class UpdateTaskRequest extends FormRequest
         }
         
         // User can only update tasks assigned to them
-        if (auth()->user()->role === 'user' && auth()->user()->id === $task->assigned_to) {
+        if (auth()->user()->role === 'user') {
             return true;
         }
         
@@ -37,7 +37,7 @@ class UpdateTaskRequest extends FormRequest
             //
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'assigned_to' => 'required|exists:users,id',
+            'assigned_to' => 'required',
             'status' => 'required|in:pending,in_progress,completed',
             'due_date'    => 'nullable|date|after_or_equal:today',
         ];

@@ -48,18 +48,18 @@ class TaskController extends Controller
         $this->authorize('view', $task);
         return view('tasks.show', compact('task'));
     }
-    public function edit(Task $task)
+    public function edit(String $id)
     {
-        //need to update this method
-        $this->authorize('update', $task);
+        $task = Task::with('assignee')->findOrFail($id);
         $users = User::all();
+        $this->authorize('update', $task);
         return view('tasks.edit', compact('task', 'users'));
     }
     public function update(UpdateTaskRequest $request, String $id)
     {
         $task =  Task::find($id);
         $this->authorize('update', $task);
-
+        
         $validated = $request->validated();
 
         $updated = $task->update($validated);

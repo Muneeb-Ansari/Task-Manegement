@@ -22,36 +22,40 @@
                     @csrf
                     @method('PUT')
 
-                    {{-- @php
-                        $isUser = auth()->user()->role === 'user';
-                        $isAdmin = auth()->user()->role === 'admin';
-                    @endphp --}}
-
                     <!-- Title -->
                     <div class="mb-3">
                         <label for="title" class="form-label">Task Title</label>
-                            <input type="text" name="title" id="title" class="form-control"
-                                value="{{ old('title', $task->title) }}" required>
+                        <input type="text" name="title" id="title" class="form-control"
+                            value="{{ old('title', $task->title) }}" {{ auth()->user()->role === 'user' ? 'readonly' : '' }}
+                            required>
                     </div>
 
                     <!-- Description -->
                     <div class="mb-3">
                         <label for="description" class="form-label">Task Description</label>
-                            <textarea name="description" id="description" rows="4" class="form-control" required>{{ old('description', $task->description) }}</textarea>
+                        <textarea name="description" id="description" rows="4" class="form-control"
+                            {{ auth()->user()->role === 'user' ? 'readonly' : '' }} required>{{ old('description', $task->description) }}
+                            
+                        </textarea>
                     </div>
 
-                   <!-- Assignee -->
-<div class="mb-3">
-    <label for="assigned_to" class="form-label">Assign To</label>
-        <select name="assigned_to" id="assigned_to" class="form-select" required>
-            <option value="">-- Select User --</option>
-            @foreach ($users as $user)
-                <option value="{{ $user->id }}" {{ old('assigned_to', $task->assigned_to) == $user->id ? 'selected' : '' }}>
-                    {{ $user->name }}
-                </option>
-            @endforeach
-        </select>
-</div>
+                    <!-- Assignee -->
+                    <div class="mb-3">
+                        <label for="assigned_to" class="form-label">Assign To</label>
+                        <select name="assigned_to" id="assigned_to" class="form-select"
+                            {{ auth()->user()->role === 'user' ? 'readonly' : '' }} required>
+                            <option value="{{ auth()->user()->role === 'user' ? $task->assignee->id : '' }}">
+                                {{ auth()->user()->role === 'user' ? $task->assignee->name : '--Select User--' }}</option>
+                            @if (auth()->user()->role === 'admin')
+                                @foreach ($users as $user)
+                                    <option value="{{ $user->id }}"
+                                        {{ old('assigned_to', $task->assigned_to) == $user->id ? 'selected' : '' }}>
+                                        {{ $user->name }}
+                                    </option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
 
                     <!-- Status -->
                     <div class="mb-3">
@@ -81,14 +85,14 @@
                     <button type="submit" class="btn btn-primary">Update Task</button>
                     <a href="{{ route('tasks.index') }}" class="btn btn-secondary">Cancel</a>
 
-                    {{-- @if ($isUser)
+                    @if (auth()->user()->role === 'user')
                         <div class="mt-3">
                             <small class="text-muted">
                                 <i class="fas fa-info-circle"></i>
                                 You can only update the status and due date of this task.
                             </small>
                         </div>
-                    @endif --}}
+                    @endif
                 </form>
             </div>
         </div>
