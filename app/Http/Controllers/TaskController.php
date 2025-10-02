@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\{StoreTaskRequest, UpdateTaskRequest};
 use App\Models\{User, Task};
 use App\Repositories\TaskRepository;
+use App\Events\TaskAssigned;
 
 class TaskController extends Controller
 {
@@ -19,8 +20,7 @@ class TaskController extends Controller
 
     public function index()
     {
-        $user = auth()->user();
-        $tasks = $this->taskRepository->index($user);
+        $tasks = $this->taskRepository->index();
         return view('tasks.index', compact('tasks'));
     }
 
@@ -32,9 +32,7 @@ class TaskController extends Controller
 
     public function store(StoreTaskRequest $request)
     {
-        $validated = $request->validated();
-        $validated['created_by'] = auth()->id();
-        $task = $this->taskRepository->store($request, $validated);
+        $task = $this->taskRepository->store($request);
         if ($task) {
             return redirect()->route('tasks.index')->with('success', 'Task created successfully!');
         } else {
@@ -51,18 +49,29 @@ class TaskController extends Controller
     public function edit(String $id)
     {
         $task = Task::with('assignee')->findOrFail($id);
-        $users = User::all();
+        $users = User::where('role', 'user')->get();
         $this->authorize('update', $task);
+        
+
         return view('tasks.edit', compact('task', 'users'));
     }
     public function update(UpdateTaskRequest $request, String $id)
     {
-        $task =  Task::find($id);
+        $task = Task::with('assignee')->findOrFail($id);
         $this->authorize('update', $task);
-        
+
         $validated = $request->validated();
+        $assignee = User::findOrFail($validated['assigned_to']);
 
         $updated = $task->update($validated);
+
+        if ($task->assignee->role === 'user') {
+            # code...
+            event(new TaskAssigned($task, $assignee, $request->user(), 'updated_by_user'));
+        } else {
+            # code...
+            event(new TaskAssigned($task, $assignee, $request->user(), 'updated_by_admin'));
+        }
         if ($updated) {
             return redirect()->route('tasks.show', $task)->with('success', 'Task updated successfully!');
         } else {

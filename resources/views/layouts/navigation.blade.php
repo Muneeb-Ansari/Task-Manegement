@@ -25,7 +25,7 @@
                 @auth
                     <div class="mx-3">
                         <a href="{{ route('notifications.notification') }}" class="position-relative">
-                            🔔
+                            <i class="fas fa-bell"></i>
                             @if (auth()->user()->unreadNotifications()->count())
                                 <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
                                     {{ auth()->user()->unreadNotifications()->count() }}

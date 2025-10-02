@@ -21,7 +21,10 @@ class TaskAssigned
     public function __construct(
         public Task $task,
         public User $assignee,
-        public ?User $assignedBy = null
+        public ?User $assignedBy = null,
+        public string $actionType, // 'assigned', 'due_date_updated'
+        // public $oldDueDate = null,
+        // public $newDueDate = null,
     ) {
         //
 

@@ -9,12 +9,12 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-100">
         @include('layouts.navigation')
-
         {{-- optional: mobile toggle button --}}
         <button class="btn btn-outline-secondary d-md-none m-2" type="button" data-bs-toggle="collapse"
             data-bs-target="#appSidebar" aria-controls="appSidebar" aria-expanded="false" aria-label="Toggle sidebar">

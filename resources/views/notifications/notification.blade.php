@@ -21,7 +21,7 @@
         </form>
       </li>
     @empty
-      <li class="list-group-item">No unread notifications 🎉</li>
+      <li class="list-group-item">No unread notifications</li>
     @endforelse
   </ul>
   <div class="mt-3">{{ $notifications->links() }}</div>
