@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\{Task, User};
 use App\Events\TaskAssigned;
+use App\Jobs\DispatchDueDateReminders;
 
 class TaskRepository
 {
@@ -37,5 +38,30 @@ class TaskRepository
         } catch (\Exception $e) {
             return $e;
         }
+    }
+
+    public function update($request, $id)
+    {
+
+        $task = Task::with('assignee')->findOrFail($id);
+        // $this->authorize('update', $task);
+
+        $validated = $request->validated();
+        $assignee = User::findOrFail($validated['assigned_to']);
+        // $oldDueDate = $task->due_date;
+
+        $updated = $task->update($validated);
+
+        if ($task->assignee->role === 'user') {
+            event(new TaskAssigned($task, $assignee, $request->user(), 'updated_by_user'));
+            // This automatically triggers due to Model boot method
+            DispatchDueDateReminders::dispatch($task);
+        } else {
+            event(new TaskAssigned($task, $assignee, $request->user(), 'updated_by_admin'));
+        }
+        return [
+            'task' => $task,
+            'updated' => $updated,
+        ];
     }
 }

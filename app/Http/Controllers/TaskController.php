@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\{StoreTaskRequest, UpdateTaskRequest};
 use App\Models\{User, Task};
 use App\Repositories\TaskRepository;
-use App\Events\TaskAssigned;
 
 class TaskController extends Controller
 {
@@ -57,31 +55,18 @@ class TaskController extends Controller
     }
     public function update(UpdateTaskRequest $request, String $id)
     {
-        $task = Task::with('assignee')->findOrFail($id);
-        $this->authorize('update', $task);
-
-        $validated = $request->validated();
-        $assignee = User::findOrFail($validated['assigned_to']);
-
-        $updated = $task->update($validated);
-
-        if ($task->assignee->role === 'user') {
-            # code...
-            event(new TaskAssigned($task, $assignee, $request->user(), 'updated_by_user'));
+        $res = $this->taskRepository->update($request, $id);
+        if ($res['updated']) {
+            return redirect()->route('tasks.show', $res['task'])->with('success', 'Task updated successfully!');
         } else {
-            # code...
-            event(new TaskAssigned($task, $assignee, $request->user(), 'updated_by_admin'));
-        }
-        if ($updated) {
-            return redirect()->route('tasks.show', $task)->with('success', 'Task updated successfully!');
-        } else {
-            return redirect()->route('tasks.show', $task)->with('danger', 'Task not updated');
+            return redirect()->route('tasks.show', $res['task'])->with('danger', 'Task not updated');
         }
     }
-    public function destroy(Task $task, $id)
+    public function destroy($id)
     {
+        $task = Task::find( $id);
         $this->authorize('delete', $task);
-        $deleted = $task->find($id)->delete();
+        $deleted = $task->delete();
         if ($deleted) {
             return redirect()->route('tasks.index')->with('success', 'Task Deleted successfully!');
         } else {

@@ -5,7 +5,8 @@ namespace App\Listeners;
 use App\Events\TaskAssigned;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
-use App\Notifications\TaskAssignedNotification;
+use App\Notifications\{TaskAssignedNotification,TaskUpdateNotification};
+use App\Models\User;
 
 class SendTaskAssignedNotification
 {
@@ -59,8 +60,9 @@ class SendTaskAssignedNotification
 
     private function sendUpdateNotificationToAdmin($event)
     {
-         $event->assignedBy->notify(
-            new TaskAssignedNotification($event->task, $event->assignee)
+        $admin = User::find($event->task->created_by);
+        $admin->notify(
+            new TaskUpdateNotification($event->task, $event->assignee)
         );
     }
 }

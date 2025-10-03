@@ -22,9 +22,11 @@ class TaskAssigned
         public Task $task,
         public User $assignee,
         public ?User $assignedBy = null,
-        public string $actionType, // 'assigned', 'due_date_updated'
+        public string $actionType, 
         // public $oldDueDate = null,
         // public $newDueDate = null,
+        // public $oldStatus = null,
+        // public $newStatus = null,
     ) {
         //
 
@@ -41,4 +43,24 @@ class TaskAssigned
             new PrivateChannel('channel-name'),
         ];
     }
+
+    //will work in future
+
+    // public static function forDueDateUpdate(Task $task, User $assignee, $oldDueDate, $newDueDate)
+    // {
+    //     $event = new self($task, $assignee, null, 'due_date_updated');
+    //     // $event->actionType = 'due_date_updated';
+    //     $event->oldDueDate = $oldDueDate;
+    //     $event->newDueDate = $newDueDate;
+    //     return $event;
+    // }
+
+    // public static function forStatusChange(Task $task, User $assignee, $oldStatus, $newStatus)
+    // {
+    //     $event = new self($task, $assignee, null, 'status_changed');
+    //     // $event->actionType = 'status_changed';
+    //     $event->oldStatus = $oldStatus;
+    //     $event->newStatus = $newStatus;
+    //     return $event;
+    // }
 }
