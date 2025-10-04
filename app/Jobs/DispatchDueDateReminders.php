@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Models\{Task,TaskDueDateReminder};
+use App\Models\{Task, TaskDueDateReminder};
 use Illuminate\Support\Facades\Log;
 
 class DispatchDueDateReminders implements ShouldQueue
@@ -30,9 +30,7 @@ class DispatchDueDateReminders implements ShouldQueue
      */
     public function handle(): void
     {
-        dd('raeaching');
         //
-        \Log::error('Task not found in DispatchDueDateReminders');
 
         $this->task->dueDateReminders()
             ->where('is_completed', false)
@@ -44,29 +42,39 @@ class DispatchDueDateReminders implements ShouldQueue
 
     private function scheduleReminders()
     {
-        $dueDate = $this->task->due_date;
-        $userId = $this->task->assigned_to;
 
-        $reminderIntervals = [
-            '1_day_before' => $dueDate->copy()->subDay(),
-            '6_hours_before' => $dueDate->copy()->subHours(6),
-            '3_hours_before' => $dueDate->copy()->subHours(3),
-            '1_hour_before' => $dueDate->copy()->subHour(),
-            '30_minutes_before' => $dueDate->copy()->subMinutes(30),
-        ];
+        try {
+            //code...
+            $dueDate = $this->task->due_date;
+            $userId = $this->task->assigned_to;
 
-        foreach ($reminderIntervals as $type => $reminderTime) {
-            // Only schedule if reminder time is in future
-            if ($reminderTime->isFuture()) {
-                TaskDueDateReminder::create([
-                    'task_id' => $this->task->id,
-                    'user_id' => $userId,
-                    'due_date' => $dueDate,
-                ]);
+            $reminderIntervals = [
+                // '1_day_before' => $dueDate->copy()->subDay(),
+                // '6_hours_before' => $dueDate->copy()->subHours(6),
+                // '3_hours_before' => $dueDate->copy()->subHours(3),
+                // '1_hour_before' => $dueDate->copy()->subHour(),
+                // '30_minutes_before' => $dueDate->copy()->subMinutes(30),
+                '10_seconds' => now()->addSeconds(10),
+                '20_seconds' => now()->addSeconds(20),
+                '30_seconds' => now()->addSeconds(30),
+            ];
 
-                SendDueDateReminder::dispatch($this->task, $type)
-                    ->delay($reminderTime);
+            foreach ($reminderIntervals as $type => $reminderTime) {
+                // Only schedule if reminder time is in future
+                if ($reminderTime->isFuture()) {
+                    TaskDueDateReminder::create([
+                        'task_id' => $this->task->id,
+                        'user_id' => $userId,
+                        'due_date' => $dueDate,
+                    ]);
+
+                    SendDueDateReminder::dispatch($this->task, $type)
+                        ->delay($reminderTime)->delay($reminderTime->addSeconds(5));
+                }
             }
+        } catch (\Exception $th) {
+            //throw $th;
+            dd($th);
         }
     }
 }

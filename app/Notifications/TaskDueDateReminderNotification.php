@@ -19,7 +19,7 @@ class TaskDueDateReminderNotification extends Notification implements ShouldQueu
     public $task;
     public $reminderType;
 
-    public function __construct($task, $reminderType)
+    public function __construct(Task $task, $reminderType)
     {
         //
         $this->task = $task;
@@ -94,7 +94,7 @@ class TaskDueDateReminderNotification extends Notification implements ShouldQueu
     {
         $now = now();
         $dueDate = $this->task->due_date;
-        
+
         if ($dueDate->diffInDays($now) > 0) {
             return $dueDate->diffInDays($now) . ' days remaining';
         } elseif ($dueDate->diffInHours($now) > 0) {

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\jobs\DispatchDueDateReminders;
+use App\Jobs\DispatchDueDateReminders;
 
 class Task extends Model
 {
