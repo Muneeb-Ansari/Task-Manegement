@@ -25,6 +25,7 @@ class StoreTaskRequest extends FormRequest
             //
             'title'       => 'required|string|max:255',
             'description' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'assigned_to' => 'required|exists:users,id',
             'status'      => 'required|in:pending,in_progress,completed',
             'due_date'    => 'nullable|date|after_or_equal:today',

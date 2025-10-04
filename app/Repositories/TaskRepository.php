@@ -29,6 +29,10 @@ class TaskRepository
             $validated = $request->validated();
             $validated['created_by'] = auth()->id();
 
+            if ($request->hasFile('image')) {
+                $validated['image'] = $request->file('image')->store('tasks', 'public');
+            }
+
             $task = Task::create($validated);
             $assignee = User::findOrFail($validated['assigned_to']);
 
@@ -42,26 +46,33 @@ class TaskRepository
 
     public function update($request, $id)
     {
+        try {
+            //code...
+            $task = Task::with('assignee')->findOrFail($id);
+            // $this->authorize('update', $task);
 
-        $task = Task::with('assignee')->findOrFail($id);
-        // $this->authorize('update', $task);
+            $validated = $request->validated();
+            $assignee = User::findOrFail($validated['assigned_to']);
+            // $oldDueDate = $task->due_date;
+            if ($request->hasFile('image')) {
+                $validated['image'] = $request->file('image')->store('tasks', 'public');
+            }
 
-        $validated = $request->validated();
-        $assignee = User::findOrFail($validated['assigned_to']);
-        // $oldDueDate = $task->due_date;
+            $updated = $task->update($validated);
 
-        $updated = $task->update($validated);
-
-        if ($task->assignee->role === 'user') {
-            event(new TaskAssigned($task, $assignee, $request->user(), 'updated_by_user'));
-            // This automatically triggers due to Model boot method
-            DispatchDueDateReminders::dispatch($task);
-        } else {
-            event(new TaskAssigned($task, $assignee, $request->user(), 'updated_by_admin'));
+            if ($task->assignee->role === 'user') {
+                event(new TaskAssigned($task, $assignee, $request->user(), 'updated_by_user'));
+                // This automatically triggers due to Model boot method
+                DispatchDueDateReminders::dispatch($task);
+            } else {
+                event(new TaskAssigned($task, $assignee, $request->user(), 'updated_by_admin'));
+            }
+            return [
+                'task' => $task,
+                'updated' => $updated,
+            ];
+        } catch (\Exception $e) {
+            return $e;
         }
-        return [
-            'task' => $task,
-            'updated' => $updated,
-        ];
     }
 }

@@ -18,7 +18,7 @@
         <!-- Task Edit Form -->
         <div class="card">
             <div class="card-body">
-                <form action="{{ route('tasks.update', $task->id) }}" method="POST">
+                <form action="{{ route('tasks.update', $task->id) }}" enctype="multipart/form-data" method="POST">
                     @csrf
                     @method('PUT')
 
@@ -35,8 +35,21 @@
                         <label for="description" class="form-label">Task Description</label>
                         <textarea name="description" id="description" rows="4" class="form-control"
                             {{ auth()->user()->role === 'user' ? 'readonly' : '' }} required>{{ old('description', $task->description) }}
-                            
+
                         </textarea>
+                    </div>
+                    <!-- Image -->
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Task Image</label>
+                        {{-- Show old image if exists --}}
+                        @if ($task->image)
+                            <div class="mb-2">
+                                <img src="{{ asset('storage/' . $task->image) }}" alt="Task Image" width="100"
+                                    class="rounded border">
+                            </div>
+                        @else
+                            <input type="file" name="image" id="image" class="form-control">
+                        @endif
                     </div>
 
                     <!-- Assignee -->
@@ -78,7 +91,7 @@
                     <div class="mb-3">
                         <label for="due_date" class="form-label">Due Date</label>
                         <input type="date" name="due_date" id="due_date" class="form-control"
-                            value="{{ old('due_date', $task->due_date) }}" required>
+                            value="{{ old('due_date', $task->due_date->format('Y-m-d')) }}" required>
                     </div>
 
                     <!-- Submit -->

@@ -18,14 +18,23 @@ class TaskController extends Controller
 
     public function index()
     {
-        $tasks = $this->taskRepository->index();
-        return view('tasks.index', compact('tasks'));
+        try {
+            $tasks = $this->taskRepository->index();
+            return view('tasks.index', compact('tasks'));
+        } catch (\Exception $e) {
+            return $e;
+        }
     }
 
     public function create()
     {
-        $users = User::where('role', 'user')->get();
-        return view('tasks.create', compact('users'));
+        try {
+            //code...
+            $users = User::where('role', 'user')->get();
+            return view('tasks.create', compact('users'));
+        } catch (\Exception $e) {
+            return $e;
+        }
     }
 
     public function store(StoreTaskRequest $request)
@@ -40,18 +49,32 @@ class TaskController extends Controller
 
     public function show(String $id)
     {
-        $task = Task::find($id);
-        $this->authorize('view', $task);
-        return view('tasks.show', compact('task'));
+        try {
+            //code...
+            $task = Task::find($id);
+            $this->authorize('view', $task);
+
+            return view('tasks.show', compact('task'));
+
+        } catch (\Exception $e) {
+            return $e;
+        }
     }
     public function edit(String $id)
     {
-        $task = Task::with('assignee')->findOrFail($id);
-        $users = User::where('role', 'user')->get();
-        $this->authorize('update', $task);
-        
+        try {
+            //code...
+            $task = Task::with('assignee')->findOrFail($id);
+            $users = User::where('role', 'user')->get();
 
-        return view('tasks.edit', compact('task', 'users'));
+            $this->authorize('update', $task);
+
+            return view('tasks.edit', compact('task', 'users'));
+        } catch (\Exception $e) {
+            return $e;
+        }
+
+
     }
     public function update(UpdateTaskRequest $request, String $id)
     {

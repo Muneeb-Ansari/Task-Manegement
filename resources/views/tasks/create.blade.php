@@ -18,7 +18,7 @@
         <!-- Task Create Form -->
         <div class="card">
             <div class="card-body">
-                <form action="{{ route('tasks.store') }}" method="POST">
+                <form action="{{ route('tasks.store') }}" enctype="multipart/form-data" method="POST">
                     @csrf
 
                     <!-- Title -->
@@ -32,6 +32,12 @@
                     <div class="mb-3">
                         <label for="description" class="form-label">Task Description</label>
                         <textarea name="description" id="description" rows="4" class="form-control" required>{{ old('description') }}</textarea>
+                    </div>
+
+                    <!-- image field -->
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Task Image</label>
+                        <input type="file" name="image" id="image" class="form-control">
                     </div>
 
                     <!-- Assignee -->
@@ -82,13 +88,13 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
-$(document).ready(function() {
-    $("#due_date").datepicker({
-        dateFormat: 'yy-mm-dd',
-        minDate: 0,
-        changeMonth: true,
-        changeYear: true,
-        yearRange: '2024:2030'
+    $(document).ready(function() {
+        $("#due_date").datepicker({
+            dateFormat: 'yy-mm-dd',
+            minDate: 0,
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '2024:2030'
+        });
     });
-});
 </script>
