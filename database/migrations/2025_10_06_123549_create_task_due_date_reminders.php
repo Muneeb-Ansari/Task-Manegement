@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::table('task_due_date_reminders', function (Blueprint $table) {
             //
-            $table->string('reminder_type')->nullable();; // 24h, 6h, 1h, 30m, due
-            $table->timestamp('scheduled_for')->nullable();;
-            $table->timestamp('due_snapshot')->nullable();; // job run-time guard
+            $table->string('reminder_type')->nullable(); // 24h, 6h, 1h, 30m, due
+            $table->timestamp('scheduled_for')->nullable();
+            $table->timestamp('due_snapshot')->nullable(); // job run-time guard
         });
     }
 

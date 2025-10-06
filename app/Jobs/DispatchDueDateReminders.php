@@ -34,11 +34,6 @@ class DispatchDueDateReminders implements ShouldQueue
         //
         $task = Task::with('assignee')->find($this->taskId);
 
-        // $task->dueDateReminders()
-        //     ->where('is_completed', false)
-        //     ->update(['is_completed' => true]);
-
-
         //for testing purpose
 
         if (! $task || ! $task->assignee || ! $task->due_date) return;
@@ -53,22 +48,24 @@ class DispatchDueDateReminders implements ShouldQueue
 
         try {
             //code...
-            // $due = Carbon::parse($task->due_date);
+            $due = Carbon::parse($task->due_date);
 
-            // $plan = [
-            //     '24h'  => $due->copy()->subDay(),
-            //     '6h'   => $due->copy()->subHours(6),
-            //     '1h'   => $due->copy()->subHour(),
-            //     '30m'  => $due->copy()->subMinutes(30),
-            //     'due'  => $due->copy(),
-            // ];
-
-            $due = $task->due_date;
             $plan = [
-                '3m'  => $due->copy()->subMinute(),
-                '1m' => $due->copy()->subMinute(),
-                'due' => $due->copy(),
+                '24h'  => $due->copy()->subDay(),
+                '6h'   => $due->copy()->subHours(6),
+                '1h'   => $due->copy()->subHour(),
+                '30m'  => $due->copy()->subMinutes(30),
+                'due'  => $due->copy(),
             ];
+
+            // for testing
+            // $due = Carbon::now()->addMinutes(3);
+            // $plan = [
+            //     '2m'  => $due->copy()->subMinute(2),
+            //     '1m' => $due->copy()->subMinute(),
+            //     '30s' => $due->copy()->subSeconds(30),
+            //     'due' => $due->copy(),
+            // ];
 
             foreach ($plan as $type => $when) {
                 // if ($when->isFuture()) {
@@ -79,6 +76,7 @@ class DispatchDueDateReminders implements ShouldQueue
                         'reminder_type' => $type,
                         'scheduled_for' => $when,
                         'due_snapshot'  => $due, // guard against due changed later
+                        'due_date'     => $due,
                     ]);
 
                     SendDueDateReminder::dispatch($task->id, $type, $due->toDateTimeString())
