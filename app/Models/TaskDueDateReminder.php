@@ -9,11 +9,14 @@ class TaskDueDateReminder extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['task_id', 'user_id', 'due_date', 'reminder_sent_at', 'is_completed'];
+    protected $fillable = [
+        'task_id','user_id','reminder_type','scheduled_for','reminder_sent_at','due_snapshot','is_completed'
+    ];
 
     protected $casts = [
-        'due_date' => 'datetime',
+        'scheduled_for' => 'datetime',
         'reminder_sent_at' => 'datetime',
+        'due_snapshot' => 'datetime',
     ];
 
     public function task()

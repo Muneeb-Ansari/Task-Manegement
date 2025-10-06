@@ -16,14 +16,14 @@ class TaskDueDateReminderNotification extends Notification implements ShouldQueu
     /**
      * Create a new notification instance.
      */
-    public $task;
-    public $reminderType;
+    // public $task;
+    // public $reminderType;
 
-    public function __construct(Task $task, $reminderType)
+    public function __construct(public Task $task, public string $type)
     {
         //
-        $this->task = $task;
-        $this->reminderType = $reminderType;
+        // $this->task = $task;
+        // $this->reminderType = $reminderType;
     }
 
     /**
@@ -41,14 +41,13 @@ class TaskDueDateReminderNotification extends Notification implements ShouldQueu
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $timeLeft = $this->getTimeLeftMessage();
-
+        $due = optional($this->task->due_date)->format('d M Y, h:i A');
         return (new MailMessage)
-            ->subject("Task Reminder: {$this->task->title}")
-            ->line("Your task '{$this->task->title}' is due soon!")
-            ->line($timeLeft)
-            ->action('View Task', url("/tasks/{$this->task->id}"))
-            ->line('Thank you for using our application!');
+            ->subject("⏰ Task Reminder: {$this->task->title}")
+            ->greeting("Hi {$notifiable->name},")
+            ->line("Aapke task **{$this->task->title}** ki due date **{$due}** hai.")
+            ->line("Reminder: ".$this->getTimeLeftMessage())
+            ->action('View Task', url("/tasks/{$this->task->id}"));
     }
 
     /**
@@ -59,7 +58,11 @@ class TaskDueDateReminderNotification extends Notification implements ShouldQueu
     public function toArray(object $notifiable): array
     {
         return [
-            //
+            'task_id' => $this->task->id,
+            'title'   => $this->task->title,
+            'type'    => $this->type,
+            'due'     => $this->task->due_date?->toDateTimeString(),
+            'message' => $this->getTimeLeftMessage(),
         ];
     }
 
@@ -74,7 +77,7 @@ class TaskDueDateReminderNotification extends Notification implements ShouldQueu
             'message' => "Task '{$this->task->title}' - {$timeLeft}",
             'url' => url("/tasks/{$this->task->id}"),
             'type' => 'due_date_reminder',
-            'reminder_type' => $this->reminderType,
+            'reminder_type' => $this->type,
         ];
     }
 

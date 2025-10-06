@@ -49,15 +49,15 @@ class Task extends Model
     }
 
     // Detect the change in due_date
-    public static function boot()
-    {
-        parent::boot();
+    // public static function boot()
+    // {
+    //     parent::boot();
 
-        static::updating(function ($task) {
-            if ($task->isDirty('due_date')) {
-                //Automatically dispatch the job when due date changes
-                DispatchDueDateReminders::dispatch($task);
-            }
-        });
-    }
+    //     static::updating(function ($task) {
+    //         if ($task->isDirty('due_date')) {
+    //             //Automatically dispatch the job when due date changes
+    //             DispatchDueDateReminders::dispatch($task);
+    //         }
+    //     });
+    // }
 }

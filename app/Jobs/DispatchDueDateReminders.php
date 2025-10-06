@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\{Task, TaskDueDateReminder};
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class DispatchDueDateReminders implements ShouldQueue
@@ -17,12 +18,12 @@ class DispatchDueDateReminders implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public $task;
+    public $taskId;
 
-    public function __construct(Task $task)
+    public function __construct($taskId)
     {
         //
-        $this->task = $task;
+        $this->taskId = $taskId;
     }
 
     /**
@@ -31,46 +32,58 @@ class DispatchDueDateReminders implements ShouldQueue
     public function handle(): void
     {
         //
+        $task = Task::with('assignee')->find($this->taskId);
 
-        $this->task->dueDateReminders()
-            ->where('is_completed', false)
-            ->update(['is_completed' => true]);
+        // $task->dueDateReminders()
+        //     ->where('is_completed', false)
+        //     ->update(['is_completed' => true]);
 
-        // Set reminder for new due date
-        $this->scheduleReminders();
+
+        //for testing purpose
+
+        if (! $task || ! $task->assignee || ! $task->due_date) return;
+
+        $task->dueDateReminders()->where('is_completed', false)->update(['is_completed' => true]);
+
+        $this->scheduleReminders($task);
     }
 
-    private function scheduleReminders()
+    private function scheduleReminders($task)
     {
 
         try {
             //code...
-            $dueDate = $this->task->due_date;
-            $userId = $this->task->assigned_to;
+            // $due = Carbon::parse($task->due_date);
 
-            $reminderIntervals = [
-                // '1_day_before' => $dueDate->copy()->subDay(),
-                // '6_hours_before' => $dueDate->copy()->subHours(6),
-                // '3_hours_before' => $dueDate->copy()->subHours(3),
-                // '1_hour_before' => $dueDate->copy()->subHour(),
-                // '30_minutes_before' => $dueDate->copy()->subMinutes(30),
-                '10_seconds' => now()->addSeconds(10),
-                '20_seconds' => now()->addSeconds(20),
-                '30_seconds' => now()->addSeconds(30),
+            // $plan = [
+            //     '24h'  => $due->copy()->subDay(),
+            //     '6h'   => $due->copy()->subHours(6),
+            //     '1h'   => $due->copy()->subHour(),
+            //     '30m'  => $due->copy()->subMinutes(30),
+            //     'due'  => $due->copy(),
+            // ];
+
+            $due = $task->due_date;
+            $plan = [
+                '3m'  => $due->copy()->subMinute(),
+                '1m' => $due->copy()->subMinute(),
+                'due' => $due->copy(),
             ];
 
-            foreach ($reminderIntervals as $type => $reminderTime) {
-                // Only schedule if reminder time is in future
-                if ($reminderTime->isFuture()) {
+            foreach ($plan as $type => $when) {
+                // if ($when->isFuture()) {
+                    // DB record so we can mark sent later
                     TaskDueDateReminder::create([
-                        'task_id' => $this->task->id,
-                        'user_id' => $userId,
-                        'due_date' => $dueDate,
+                        'task_id'       => $task->id,
+                        'user_id'       => $task->assigned_to,
+                        'reminder_type' => $type,
+                        'scheduled_for' => $when,
+                        'due_snapshot'  => $due, // guard against due changed later
                     ]);
 
-                    SendDueDateReminder::dispatch($this->task, $type)
-                        ->delay($reminderTime)->delay($reminderTime->addSeconds(5));
-                }
+                    SendDueDateReminder::dispatch($task->id, $type, $due->toDateTimeString())
+                        ->delay($when);
+                // }
             }
         } catch (\Exception $th) {
             //throw $th;
