@@ -59,11 +59,11 @@ Route::middleware('auth')->group(function () {
 });
 
 // ChatController
-Route::middleware('auth')->group(function () {
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
-    Route::get('/chat/{user}', [ChatController::class, 'fetch']);
-    Route::post('/chat/{user}', [ChatController::class, 'send']);
-});
+// Route::middleware('auth')->group(function () {
+//     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+//     Route::get('/chat/{user}', [ChatController::class, 'fetch']);
+//     Route::post('/chat/{user}', [ChatController::class, 'send']);
+// });
 
 // notifications
 
