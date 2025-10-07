@@ -6,8 +6,10 @@
             <h1>Users List</h1>
 
             @can('create', App\Models\Task::class)
-                <a href="{{ route('users.create') }}" class="btn btn-success">
-                    + Create User
+                <a href="{{ route('users.create') }}">
+                     <x-success-button>
+                        + Create User
+                    </x-success-button>
                 </a>
             @endcan
         </div>
@@ -37,15 +39,20 @@
                             <td>
                                 {{-- <a href="{{ route('users.show', $user->id) }}" class="btn btn-sm btn-info">View</a> --}}
                                 @can('update', $user)
-                                    <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-primary">Edit</a>
+                                    <a href="{{ route('users.edit', $user->id) }}">
+                                        <x-secondary-button>
+                                            Edit
+                                        </x-secondary-button>
+                                    </a>
                                 @endcan
                                 @can('delete', $user)
                                     <form action="{{ route('users.destroy', $user->id) }}" method="POST"
                                         style="display:inline-block;">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Are you sure?')">Delete</button>
+                                        <x-danger-button onclick="return confirm('Are you sure?')">
+                                            Delete
+                                        </x-danger-button>
                                     </form>
                                 @endcan
                             </td>

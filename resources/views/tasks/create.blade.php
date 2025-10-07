@@ -4,17 +4,6 @@
     <div class="container">
         <h1 class="mb-4">Create New Task</h1>
 
-        <!-- Validation Errors -->
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
         <!-- Task Create Form -->
         <div class="card">
             <div class="card-body">
@@ -23,26 +12,34 @@
 
                     <!-- Title -->
                     <div class="mb-3">
-                        <label for="title" class="form-label">Task Title</label>
+                        <x-input-label for="title">Task Title</x-input-label>
+                        {{-- <label for="title" class="form-label">Task Title</label> --}}
                         <input type="text" name="title" id="title" class="form-control" value="{{ old('title') }}"
                             required>
+                        <x-input-error :messages="$errors->get('title')" class="mt-1" />
                     </div>
 
                     <!-- Description -->
                     <div class="mb-3">
-                        <label for="description" class="form-label">Task Description</label>
+                        <x-input-label for="description">Task Description</x-input-label>
+                        {{-- <label for="description" class="form-label">Task Description</label> --}}
                         <textarea name="description" id="description" rows="4" class="form-control" required>{{ old('description') }}</textarea>
+
+                        <x-input-error :messages="$errors->get('description')" class="mt-1" />
                     </div>
 
                     <!-- image field -->
                     <div class="mb-3">
-                        <label for="image" class="form-label">Task Image</label>
+                         <x-input-label for="image">Task Image</x-input-label>
+                        {{-- <label for="image" class="form-label">Task Image</label> --}}
                         <input type="file" name="image" id="image" class="form-control">
+
                     </div>
 
                     <!-- Assignee -->
                     <div class="mb-3">
-                        <label for="assigned_to" class="form-label">Assign To</label>
+                        <x-input-label for="assigned_to">Assign To</x-input-label>
+                        {{-- <label for="assigned_to" class="form-label">Assign To</label> --}}
                         <select name="assigned_to" id="assigned_to" class="form-select" required>
                             <option value="">-- Select User --</option>
                             @foreach ($users as $user)
@@ -54,11 +51,14 @@
                                 @endif
                             @endforeach
                         </select>
+                        <x-input-error :messages="$errors->get('assigned_to')" class="mt-1" />
+
                     </div>
 
                     <!-- Status -->
                     <div class="mb-3">
-                        <label for="status" class="form-label">Status</label>
+                        <x-input-label for="Status">Status</x-input-label>
+                        {{-- <label for="status" class="form-label">Status</label> --}}
                         <select name="status" id="status" class="form-select" required>
                             <option value="pending" {{ old('status') == 'pending' ? 'selected' : '' }}>Pending</option>
                             <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>In Progress
@@ -66,13 +66,18 @@
                             <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Completed
                             </option>
                         </select>
+
+                        <x-input-error :messages="$errors->get('status')" class="mt-1" />
                     </div>
 
                     <!-- Due date -->
                     <div class="mb-3">
-                        <label for="due_date" class="form-label"> Due date</label>
+                        <x-input-label for="due_date">Due date</x-input-label>
+                        {{-- <label for="due_date" class="form-label"> Due date</label> --}}
                         <input type="due_date" name="due_date" id="due_date" class="form-control"
                             value="{{ old('due_date') }}">
+
+                        {{-- <x-input-error :messages="$errors->get('due_date')" class="mt-1" /> --}}
                     </div>
 
                     <!-- Submit -->

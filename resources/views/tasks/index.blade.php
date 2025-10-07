@@ -6,8 +6,10 @@
             <h1>Tasks List</h1>
 
             @can('create', App\Models\Task::class)
-                <a href="{{ route('tasks.create') }}" class="btn btn-success">
-                    + Create Task
+                <a href="{{ route('tasks.create') }}">
+                    <x-success-button>
+                        + Create Task
+                    </x-success-button>
                 </a>
             @endcan
         </div>
@@ -58,18 +60,25 @@
                             <td>{{ $task->due_date ?? '' }}</td>
                             <td>{{ $task->created_at->format('d M Y') }}</td>
                             <td>
-                                <a href="{{ route('tasks.show', $task->id) }}" class="btn btn-sm btn-info">View</a>
+                                <a href="{{ route('tasks.show', $task->id) }}">
+                                    <x-info-button>
+                                        View
+                                    </x-info-button>
+                                </a>
                                 {{-- @can('update', $task) --}}
-                                <a href="{{ route('tasks.edit', $task->id) }}" class="btn btn-sm btn-primary">Edit</a>
+                                <a href="{{ route('tasks.edit', $task->id) }}">
+                                    <x-secondary-button>
+                                        Edit
+                                    </x-secondary-button>
+                                </a>
                                 {{-- @endcan --}}
                                 @can('delete', $task)
-                                    <form action="{{ route('tasks.destroy', $task->id) }}" method="POST"
-                                        style="display:inline-block;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Are you sure?')">Delete</button>
-                                    </form>
+                                    <x-danger-button type="button" x-data
+                                        @click="$dispatch('open-modal', 'confirm-task-delete-{{ $task->id }}')">
+                                        Delete
+                                    </x-danger-button>
+                                    @include("tasks.delete-modal",['task'=> $task,])
+
                                 @endcan
                             </td>
                         </tr>
