@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{UserController, ChatController, TaskController, ProfileController};
+use App\Http\Controllers\{UserController, PusherController, TaskController, ProfileController};
 
 require __DIR__ . '/auth.php';
 /*
@@ -59,11 +59,11 @@ Route::middleware('auth')->group(function () {
 });
 
 // ChatController
-// Route::middleware('auth')->group(function () {
-//     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
-//     Route::get('/chat/{user}', [ChatController::class, 'fetch']);
-//     Route::post('/chat/{user}', [ChatController::class, 'send']);
-// });
+Route::middleware('auth')->group(function () {
+    Route::get('/chats', [PusherController::class, 'index'])->name('chat.index');
+    Route::post('/broadcast', [PusherController::class, 'broadcast']);
+    Route::post('/receive', [PusherController::class, 'receive']);
+});
 
 // notifications
 
