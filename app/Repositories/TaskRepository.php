@@ -62,7 +62,7 @@ class TaskRepository
 
             if ($task->assignee->role === 'user') {
                 event(new TaskAssigned($task, $assignee, $request->user(), 'updated_by_user'));
-                // This automatically triggers due to Model boot method
+                
                 DispatchDueDateReminders::dispatch($task->id);
             } else {
                 event(new TaskAssigned($task, $assignee, $request->user(), 'updated_by_admin'));
