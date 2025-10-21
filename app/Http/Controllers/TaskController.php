@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\{StoreTaskRequest, UpdateTaskRequest};
 use App\Models\{User, Task};
 use App\Repositories\TaskRepository;
+use App\Helpers\ErrorHandler;
 
 class TaskController extends Controller
 {
@@ -22,7 +23,7 @@ class TaskController extends Controller
             $tasks = $this->taskRepository->index();
             return view('tasks.index', compact('tasks'));
         } catch (\Exception $e) {
-            return $e;
+            return ErrorHandler::fail($e, 'Unable to display the task');
         }
     }
 
@@ -33,7 +34,7 @@ class TaskController extends Controller
             $users = User::where('role', 'user')->get();
             return view('tasks.create', compact('users'));
         } catch (\Exception $e) {
-            return $e;
+            return ErrorHandler::fail($e, 'Unable to Create the task');
         }
     }
 
@@ -57,7 +58,7 @@ class TaskController extends Controller
             return view('tasks.show', compact('task'));
 
         } catch (\Exception $e) {
-            return $e;
+            return ErrorHandler::fail($e, 'Unable to show the task');
         }
     }
     public function edit(String $id)
@@ -71,7 +72,8 @@ class TaskController extends Controller
 
             return view('tasks.edit', compact('task', 'users'));
         } catch (\Exception $e) {
-            return $e;
+            
+           return ErrorHandler::fail($e, 'Unable to edit the task');
         }
 
 

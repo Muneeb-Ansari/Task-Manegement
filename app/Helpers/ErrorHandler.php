@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ErrorHandler
 {
-    public static function fail(\Throwable $e, string $message = 'Something went wrong.'): RedirectResponse
+    public static function fail(\Throwable $e, string $message = ''): RedirectResponse
     {
         Log::error($message, [
             'error' => $e->getMessage(),

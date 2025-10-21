@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\{Task, User};
 use App\Events\TaskAssigned;
 use App\Jobs\DispatchDueDateReminders;
+use App\Helpers\ErrorHandler;
 
 class TaskRepository
 {
@@ -40,7 +41,7 @@ class TaskRepository
 
             return $task;
         } catch (\Exception $e) {
-            return $e;
+            ErrorHandler::fail($e, 'Unable to store the task');
         }
     }
 
@@ -72,7 +73,7 @@ class TaskRepository
                 'updated' => $updated,
             ];
         } catch (\Exception $e) {
-            return $e;
+            ErrorHandler::fail($e, 'Unable to update the task');
         }
     }
 }
