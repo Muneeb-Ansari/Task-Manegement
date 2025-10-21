@@ -66,10 +66,11 @@
             forceTLS: true
         });
 
-        const channel = pusher.subscribe('public');
+        const channel = pusher.subscribe('Task-Management');
 
         // receive
         channel.bind('chat', function(data) {
+             console.log('event:', data);
             $.post('/receive', {
                 _token: '{{ csrf_token() }}',
                 message: data.message
@@ -81,7 +82,7 @@
             });
         });
 
-        // send
+        // broadcast the message
         $('form').on('submit', function(e) {
             e.preventDefault();
             const msg = $('#message').val().trim();
@@ -96,11 +97,14 @@
                 },
                 data: {
                     _token: '{{ csrf_token() }}',
-                    message: msg
+                     message: msg
+                    // message: $('form #message').val()
                 }
             }).done(function(res) {
                 $('.messages').append(res);
                 $('#message').val('');
+                // $('.messages' > '.messages').last().after(res);
+                // $('form #message').val('');
                 $(document).scrollTop($(document).height());
             });
         });

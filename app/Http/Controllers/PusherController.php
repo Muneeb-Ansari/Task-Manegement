@@ -16,10 +16,16 @@ class PusherController extends Controller
 
     public function broadcast(Request $request)
     {
+        try {
+            //code...
+            broadcast(new PusherBroadcast($request->get('message')))->toOthers();
+            
+            return view('broadcast', ['message' => $request->get('message')]);
+        } catch (\Exception $th) {
+            //throw $th;
+            dd($th);
+        }
 
-        broadcast(new PusherBroadcast($request->get('message')))->toOthers();
-        
-        return view('broadcast', ['message' => $request->get('message')]);
     }
 
     public function receive(Request $request)

@@ -31,7 +31,7 @@ class PusherBroadcast implements ShouldBroadcast
      */
     public function broadcastOn(): array
     {
-        return  [new Channel('public')]; 
+        return  [new Channel('Task-Management')]; 
     }
 
     public function broadcastAs()
