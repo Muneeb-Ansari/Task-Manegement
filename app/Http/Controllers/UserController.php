@@ -36,12 +36,9 @@ class UserController extends Controller
     {
         //
         $validated = $request->validated();
-        User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
-            'role' => $validated['role'],
-        ]);
+        $validated['password'] = bcrypt($validated['password']);
+
+        User::create($validated);
 
         return redirect()->route('users.index')->with('success', 'User created successfully!');
     }
@@ -57,10 +54,8 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(User $user)
     {
-        //
-        $user = User::find($id);
         return view('users.edit', compact('user'));
     }
 
@@ -83,11 +78,11 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(User $user)
     {
-        //
-        $user = User::find($id);
         $user->delete();
-        return redirect()->route('users.index')->with('success', 'User Deleted successfully!');
+
+        return redirect()->route('users.index')
+            ->with('success', 'User deleted successfully!');
     }
 }
