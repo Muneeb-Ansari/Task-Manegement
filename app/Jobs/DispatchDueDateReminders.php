@@ -9,7 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\{Task, TaskDueDateReminder};
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
+use App\Helpers\ErrorHandler;
 
 class DispatchDueDateReminders implements ShouldQueue
 {
@@ -84,8 +84,7 @@ class DispatchDueDateReminders implements ShouldQueue
                 // }
             }
         } catch (\Exception $th) {
-            //throw $th;
-            dd($th);
+            ErrorHandler::fail($th, 'Unable to send the notification due to getting error.');
         }
     }
 }
