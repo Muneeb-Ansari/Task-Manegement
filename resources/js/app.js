@@ -21,4 +21,4 @@ window.Echo = new Echo({
 window.Alpine = Alpine;
 
 Alpine.start();
-import 'bootstrap';
+// import 'bootstrap';

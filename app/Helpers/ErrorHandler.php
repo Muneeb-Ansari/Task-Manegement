@@ -8,15 +8,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ErrorHandler
 {
-    public static function fail(\Throwable $e, string $message = ''): RedirectResponse
+    public static function fail(\Throwable $e, string $message)
     {
-        Log::error($message, [
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
-        ]);
-
-        return back()
-            ->with('error', $message)
-            ->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+        Log::error($message, ['error' => $e->getMessage()]);
+        return back()->with('danger', $message);
     }
 }

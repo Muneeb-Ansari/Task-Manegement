@@ -6,21 +6,18 @@ use App\Models\{Task, User};
 use App\Events\TaskAssigned;
 use App\Jobs\DispatchDueDateReminders;
 use App\Helpers\ErrorHandler;
+use Illuminate\Support\Facades\Storage;
 
 class TaskRepository
 {
     public function index()
     {
         $user = auth()->user();
-        if (isset($user) && $user->role === 'admin') {
-            $tasks = Task::with(['creator', 'assignee'])->latest()->paginate(10);
-        } else {
-            $tasks = Task::with(['creator', 'assignee'])
-                ->forUser($user->id)
-                ->latest()
-                ->paginate(10);
-        }
-        return $tasks;
+
+        return Task::with(['creator', 'assignee'])
+            ->when($user->role !== 'admin', fn($q) => $q->forUser($user->id))
+            ->latest()
+            ->paginate(10);
     }
 
     public function store($request)
@@ -45,25 +42,26 @@ class TaskRepository
         }
     }
 
-    public function update($request, $id)
+    public function update($request, $task)
     {
         try {
             //code...
-            $task = Task::with('assignee')->findOrFail($id);
-            // $this->authorize('update', $task);
+            $task->load('assignee');
 
             $validated = $request->validated();
             $assignee = User::findOrFail($validated['assigned_to']);
-            // $oldDueDate = $task->due_date;
-            if ($request->hasFile('image')) {
-                $validated['image'] = $request->file('image')->store('tasks', 'public');
-            }
 
+            if ($request->hasFile('image')) {
+                if ($task->image) {
+                    Storage::disk('public')->delete($task->image);
+                }
+                $data['image'] = $request->file('image')->store('tasks', 'public');
+            }
             $updated = $task->update($validated);
 
             if ($task->assignee->role === 'user') {
                 event(new TaskAssigned($task, $assignee, $request->user(), 'updated_by_user'));
-                
+
                 DispatchDueDateReminders::dispatch($task->id);
             } else {
                 event(new TaskAssigned($task, $assignee, $request->user(), 'updated_by_admin'));
@@ -75,5 +73,14 @@ class TaskRepository
         } catch (\Exception $e) {
             ErrorHandler::fail($e, 'Unable to update the task');
         }
+    }
+
+    public function destroy($task)
+    {
+        if ($task->image) {
+            Storage::disk('public')->delete($task->image);
+        }
+
+        return $task->delete();
     }
 }
