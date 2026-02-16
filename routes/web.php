@@ -31,22 +31,23 @@ Route::middleware('auth')->group(function () {
 
 
 
-Route::middleware(['auth'])->group(function () {
-
-    // Admin-only routes
-    Route::resource('tasks', TaskController::class)
-        ->only(['create', 'store', 'destroy'])->middleware('role:admin');
-
-    Route::resource('tasks', TaskController::class)
-        ->except(['create', 'store', 'destroy']);
-});
-
 Route::middleware('auth')->group(function () {
 
-    Route::resource('users', UserController::class)->middleware('role:admin');
+    // Admin-only routes: create, store, destroy
+    Route::resource('tasks', TaskController::class)
+        ->only(['create', 'store', 'destroy'])
+        ->middleware('role:admin');
 
-    Route::get('tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
+    // Public task routes: index, show, edit, update (policy will enforce permissions)
+    Route::resource('tasks', TaskController::class)
+        ->only(['index', 'show', 'edit', 'update']);
+
+    Route::post('/tasks/reorder', [TaskController::class, 'reorder'])->name('tasks.reorder');
+
+    Route::resource('users', UserController::class)
+        ->middleware('role:admin');
 });
+
 
 // ChatController
 Route::middleware('auth')->group(function () {

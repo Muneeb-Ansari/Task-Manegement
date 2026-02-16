@@ -14,6 +14,7 @@ class Task extends Model
         'title',
         'description',
         'image',
+        'priority',
         'status',
         'due_date',
         'assigned_to',
@@ -24,7 +25,6 @@ class Task extends Model
         'due_date' => 'datetime',
     ];
 
-    // creator
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');

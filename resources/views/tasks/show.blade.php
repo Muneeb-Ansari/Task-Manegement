@@ -30,6 +30,11 @@
                 <!-- Assignee -->
                 <p><strong>Assigned To:</strong> {{ $task->assignee->name ?? 'Unassigned' }}</p>
 
+                <!-- Priority -->
+                <p><strong>Priority:</strong>
+                    {{ $task->priority >= 1 && $task->priority <= 3 ? 'High' : ($task->priority >= 4 && $task->priority <= 7 ? 'Medium' : 'Low') }}
+                </p>
+
                 <!-- Status -->
                 <p><strong>Status:</strong>
                     @if ($task->status === 'completed')

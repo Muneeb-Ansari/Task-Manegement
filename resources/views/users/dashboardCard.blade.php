@@ -1,4 +1,4 @@
-<div class="col-md-4">
+<div class="col-md-6">
     <div class="card shadow-sm">
         <div class="card-header">
             <h4 class="mb-0">Users</h4>

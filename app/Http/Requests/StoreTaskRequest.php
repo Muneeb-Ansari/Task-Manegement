@@ -28,6 +28,7 @@ class StoreTaskRequest extends FormRequest
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'assigned_to' => 'required|exists:users,id',
             'status'      => 'required|in:pending,in_progress,completed',
+            'priority'    => 'required|in:high,low',
             'due_date'    => 'nullable|date|after_or_equal:today',
         ];
     }

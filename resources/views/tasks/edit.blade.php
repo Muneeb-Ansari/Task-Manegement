@@ -70,6 +70,19 @@
                         </select>
                     </div>
 
+                    <!-- Priority -->
+                    <div class="mb-3">
+                        <label for="priority" class="form-label">Priority</label>
+                        <select name="priority" id="priority" class="form-select"
+                            {{ auth()->user()->role === 'user' ? 'readonly disabled' : '' }} required>
+                            @php
+                                $current = old('priority', isset($task->priority) && $task->priority <= 2 ? 'high' : 'low');
+                            @endphp
+                            <option value="high" {{ $current == 'high' ? 'selected' : '' }}>High</option>
+                            <option value="low" {{ $current == 'low' ? 'selected' : '' }}>Low</option>
+                        </select>
+                    </div>
+
                     <!-- Status -->
                     <div class="mb-3">
                         <label for="status" class="form-label">Status</label>

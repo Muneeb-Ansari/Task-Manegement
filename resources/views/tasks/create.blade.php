@@ -55,6 +55,16 @@
 
                     </div>
 
+                    <!-- Priority -->
+                    <div class="mb-3">
+                        <x-input-label for="priority">Priority</x-input-label>
+                        <select name="priority" id="priority" class="form-select" required>
+                            <option value="high" {{ old('priority') == 'high' ? 'selected' : '' }}>High</option>
+                            <option value="low" {{ old('priority', 'low') == 'low' ? 'selected' : '' }}>Low</option>
+                        </select>
+                        <x-input-error :messages="$errors->get('priority')" class="mt-1" />
+                    </div>
+
                     <!-- Status -->
                     <div class="mb-3">
                         <x-input-label for="Status">Status</x-input-label>
@@ -74,7 +84,7 @@
                     <div class="mb-3">
                         <x-input-label for="due_date">Due date</x-input-label>
                         {{-- <label for="due_date" class="form-label"> Due date</label> --}}
-                        <input type="due_date" name="due_date" id="due_date" class="form-control"
+                        <input type="text" name="due_date" id="due_date" class="form-control"
                             value="{{ old('due_date') }}">
 
                         {{-- <x-input-error :messages="$errors->get('due_date')" class="mt-1" /> --}}
@@ -89,8 +99,8 @@
     </div>
 @endsection
 
+@push('scripts')
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
     $(document).ready(function() {
@@ -103,3 +113,4 @@
         });
     });
 </script>
+@endpush

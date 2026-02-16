@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\{StoreTaskRequest, UpdateTaskRequest};
+use Illuminate\Http\Request;
 use App\Models\{User, Task};
 use App\Repositories\TaskRepository;
-use App\Helpers\ErrorHandler;
 
 class TaskController extends Controller
 {
@@ -54,6 +54,8 @@ class TaskController extends Controller
 
     public function update(UpdateTaskRequest $request, Task $task)
     {
+        $this->authorize('update', $task);
+
         $result = $this->taskRepository->update($request, $task);
 
         return redirect()
@@ -79,5 +81,20 @@ class TaskController extends Controller
                 $deleted ? 'success' : 'danger',
                 $deleted ? 'Task deleted successfully!' : 'Task deletion failed.'
             );
+    }
+
+
+    public function reorder(Request $request)
+    {
+
+        foreach ($request->tasks as $index => $taskId) {
+
+            Task::where('id', $taskId)
+                ->update([
+                    'priority' => $index + 1
+                ]);
+        }
+
+        return response()->json(['status' => 'Reordered successful']);
     }
 }

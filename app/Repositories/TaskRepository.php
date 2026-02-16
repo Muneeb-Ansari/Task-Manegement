@@ -16,20 +16,23 @@ class TaskRepository
 
         return Task::with(['creator', 'assignee'])
             ->when($user->role !== 'admin', fn($q) => $q->forUser($user->id))
-            ->latest()
+            ->orderBy('priority', 'asc')
             ->paginate(10);
     }
 
     public function store($request)
     {
         try {
-            //code...
+            // code...
             $validated = $request->validated();
             $validated['created_by'] = auth()->id();
 
             if ($request->hasFile('image')) {
                 $validated['image'] = $request->file('image')->store('tasks', 'public');
             }
+
+            $lastPriority = Task::max('priority');
+            $validated['priority'] = $lastPriority ? $lastPriority + 1 : 1;
 
             $task = Task::create($validated);
             $assignee = User::findOrFail($validated['assigned_to']);
@@ -46,7 +49,7 @@ class TaskRepository
     {
         try {
             //code...
-            $task->load('assignee');
+            $task->load('assig nee');
 
             $validated = $request->validated();
             $assignee = User::findOrFail($validated['assigned_to']);
@@ -55,7 +58,7 @@ class TaskRepository
                 if ($task->image) {
                     Storage::disk('public')->delete($task->image);
                 }
-                $data['image'] = $request->file('image')->store('tasks', 'public');
+                $validated['image'] = $request->file('image')->store('tasks', 'public');
             }
             $updated = $task->update($validated);
 
